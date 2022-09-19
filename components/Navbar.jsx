@@ -1,18 +1,24 @@
-import React  from 'react'
+import React ,{useState} from 'react'
 // import { NavbarStyle } from '../styles/styles'
 import styled from 'styled-components'
 import {AiOutlineShoppingCart} from 'react-icons/ai'
 import {BiUserCircle} from 'react-icons/bi'
+import CartPage from './CartPage'
 const Navbar = () => {
+    const [showCartPage ,setShowCartPage] =  useState(false)
   return (
     <NavbarStyle>
+        {
+            showCartPage && <CartPage clickToClose ={()=>setShowCartPage(false)} />
+        }
+       
         <p className="brand">IT Store</p>
         <div className="nav_right">
             <div className="profile">
                <BiUserCircle/>
-                <p className="profile_info">Login </p>
+                <p className="profile_info">Login</p>
             </div>
-            <div className="cart">
+            <div className="cart" onClick={()=>setShowCartPage(true)}>
                 <AiOutlineShoppingCart/>
                 <p>Cart</p>
                 <p className="num">0</p>
