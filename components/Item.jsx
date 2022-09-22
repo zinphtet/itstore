@@ -1,17 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
-import myImg from './computer.jpg'
 import Image from 'next/image'
 import Link from 'next/link'
-const Item = () => {
+import { cartAni } from '../animation/animation'
+import { motion } from 'framer-motion'
+const Item = ({data}) => {
+  const {title , slug , img , price} = data.attributes
     // console.log(myImg)
   return (
-    <Link href={'/detail/shop-item'}>
+    <Link href={`/detail/${slug}`}>
      <a >
-    <ItemStyle>
+    <ItemStyle variants={cartAni} >
         <div className='img_container'>
         <Image
-      src={myImg.src}
+      src={img?.data?.attributes?.formats?.small?.url}
       alt="Picture of the Shop Item"
       layout='responsive'
       objectFit='cover'
@@ -19,8 +21,8 @@ const Item = () => {
       width={4}
     />
         </div>
-        <p className="item_title">Mac Book M2 Air</p>
-        <p className="price"> $ 1,099</p>
+        <p className="item_title">{title}</p>
+        <p className="price"> $ {price}</p>
     </ItemStyle>
     </a>
     </Link>
@@ -30,7 +32,7 @@ const Item = () => {
 export default Item
 
 
-const ItemStyle = styled.div`
+const ItemStyle = styled(motion.div)`
 /* height: 50rem; */
 cursor: pointer;
  /* border-radius: 2rem; */

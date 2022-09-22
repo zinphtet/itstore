@@ -1,31 +1,63 @@
-import React , {useState,useEffect} from 'react'
+import React , {useEffect , useMemo} from 'react'
 import styled from 'styled-components'
 import {AiOutlineCloseCircle} from 'react-icons/ai'
 import CartPageItem from './CartPageItem'
 import {BsCartX} from 'react-icons/bs'
 import Link from 'next/link'
-Link
+import { useContext } from 'react'
+import { CartContext } from '../Context/CartContext'
+import { motion, AnimatePresence } from "framer-motion"
+import { cartConAni , emptyCartAni , cartPageAni} from '../animation/animation'
+import { loadStripe } from '@stripe/stripe-js';
 const CartPage = ({clickToClose}) => {
-    const show = true;
+    const {state , dispatch }= useContext (CartContext) 
     useEffect(()=>{
         document.body.style.overflow='hidden'
         return ()=>{
             document.body.style.overflow = 'auto'
         }
     },[])
-  return (
-    <CardPageStyle >
-        <CartDetail >
-            <AiOutlineCloseCircle className='close' onClick={clickToClose}/>
-            <CartPageItem/>
-            <CartPageItem/>
-            <CartPageItem/>
-            <CartPageItem/>
-            <CartPageItem/>
-            <p className="total"> Subtotal : $ 2,500</p>
-             <button className='purchase'>Purchase</button>
 
-             <div className='no_items'>
+// const totalPrice = 
+const purchaseHandle = async ()=>{
+    console.log("Clicked Purchase")
+ const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+      );
+    const res = await fetch("/api/checkout", {
+        method:'POST',
+        headers : {
+            'Content-Type' :'application/json'
+        },
+        body : JSON.stringify(state.confirmItems)
+    })
+    const data = await res.json()
+    await stripe.redirectToCheckout({
+     sessionId : data.id ,
+})
+    console.log(data)
+}
+
+const totalPrice = useMemo(()=>state.confirmItems.reduce((prev,next)=>{
+    return prev + (next.price * next.quantity)
+},0) , [state.confirmItems])
+  return (
+      <CardPageStyle variants={cartPageAni} initial='initial' animate='animate' exit='exit'>
+        <AnimatePresence>
+        <CartDetail layout variants={cartConAni} initial='initial' animate='animate' exit='exit'>
+            <AiOutlineCloseCircle className='close' onClick={clickToClose}/>
+         {
+            state.confirmItems.length > 0 ? (
+                <>
+               {state.confirmItems.map((item , i)=><CartPageItem  key={item.slug} data={item} disFun = {dispatch}/>)
+}
+                <motion.p className="total" layout> Subtotal : $ {totalPrice}</motion.p>
+                <motion.button className='purchase' layout onClick={purchaseHandle}>Purchase</motion.button>
+                </>
+            )
+            :
+            (
+                <motion.div className='no_items' variants={emptyCartAni}>
                 <p>Your Cart is Empty</p>
                 <BsCartX/>
                 <Link href={'/'}>
@@ -34,15 +66,21 @@ const CartPage = ({clickToClose}) => {
                     </a>
                 </Link>
                
-             </div>
+             </motion.div>
+            )
+            
+         }
+
+           
         </CartDetail>
+        </AnimatePresence>
     </CardPageStyle>
   )
 }
 
 export default CartPage
 
-const CardPageStyle = styled.div`
+const CardPageStyle = styled(motion.div)`
     position: absolute;
     top: 0;
     left: 0;
@@ -51,7 +89,7 @@ const CardPageStyle = styled.div`
     background-color: rgba(0,0,0,0.4);
     z-index: 10;
 `
-const CartDetail = styled.div`
+const CartDetail = styled(motion.div)`
 overflow-y: auto;
     display: flex;
    flex-direction: column;

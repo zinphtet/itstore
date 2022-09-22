@@ -1,10 +1,50 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import myImg from '../../components/iphone.jpg';
 import { AiFillPlusCircle, AiFillMinusCircle } from 'react-icons/ai';
+import { useRouter } from 'next/router';
+import { useQuery } from '@apollo/client';
+import { GET_ITEM } from '../../lib/graphql';
+import { useContext } from 'react';
+import { CartContext } from '../../Context/CartContext';
+import { ADD_CART, REMOVE_CART, TO_CART } from '../../Context/actions';
+import toast from 'react-hot-toast';
 const ItemDetail = () => {
-	const [quantity, setQuantity] = useState(1);
+	// const [quantity, setQuantity] = useState(1);
+	const router = useRouter();
+	const slugId = router.query.slug;
+
+	const { state, dispatch } = useContext(CartContext);
+
+	const { data, loading, error } = useQuery(GET_ITEM, {
+		variables: {
+			slug: slugId,
+		},
+	});
+
+	if (loading) return <div>Loading ... </div>;
+	if (error) return <div>Error ... </div>;
+
+	const { title, price, img, description, slug } =
+		data.shops.data[0].attributes;
+
+	const dataFromContext = state.cartItems.find((item) => item.slug === slugId);
+	const quantity = dataFromContext?.quantity || 1;
+
+	const totalPrice = quantity ? quantity * price : price;
+
+	const addToCart = () =>
+		dispatch({ type: ADD_CART, payload: { title, price, img, slug } });
+
+	const removeFromCart = () =>
+		dispatch({ type: REMOVE_CART, payload: { title, price, img, slug } });
+
+	const confirmCart = () => {
+		toast.success('Added to Cart');
+		dispatch({ type: TO_CART, payload: { title, price, img, slug } });
+	};
+
+	console.log(state.confirmItems);
 	return (
 		<ItemDetailStyle>
 			<div
@@ -12,7 +52,7 @@ const ItemDetail = () => {
 				style={{ position: 'relative', width: '100%' }}
 			>
 				<Image
-					src={myImg.src}
+					src={img?.data?.attributes?.formats?.small?.url}
 					alt="Item img"
 					layout="responsive"
 					height={3}
@@ -21,20 +61,17 @@ const ItemDetail = () => {
 				/>
 			</div>
 			<div className="detail">
-				<p className="title">i Phone 13 pro Max </p>
-				<p className="description">
-					Apple® today introduced iPhone® 13 Pro and iPhone 13 Pro Max, pushing
-					the boundaries of what’s possible in a smartphone. Redesigned inside
-					and out, both models introduce an all-new Super Retina XDR® display
-					with ProMotion® featuring an adaptive refresh rate up to 120Hz, making
-					the touch experience faster and more responsive.
-				</p>
+				<p className="title">{title} </p>
+				<p className="description">{description}</p>
 				<div className="quantity">
-					<AiFillMinusCircle onClick={() => setQuantity((prev) => prev - 1)} />
+					<AiFillMinusCircle onClick={removeFromCart} />
 					<p> {quantity} </p>
-					<AiFillPlusCircle onClick={() => setQuantity((prev) => prev + 1)} />
+					<AiFillPlusCircle onClick={addToCart} />
+					<p> $ {totalPrice}</p>
 				</div>
-				<button className="add_btn">Add to Cart</button>
+				<button className="add_btn" onClick={confirmCart}>
+					Add to Cart
+				</button>
 			</div>
 		</ItemDetailStyle>
 	);
@@ -56,6 +93,14 @@ const ItemDetailStyle = styled.div`
             align-items: stretch;
         } */
 		display: block;
+		/* margin: 0rem 10rem; */
+
+		img {
+			display: none;
+		}
+		@media screen and (max-width: 56.25rem) {
+			padding: 4rem 6rem 0rem 6rem;
+		}
 	}
 	.detail {
 		display: flex;

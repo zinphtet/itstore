@@ -1,22 +1,41 @@
 import React , {useState} from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
-import img from './iphone.jpg'
+// import img from './iphone.jpg'
 import { AiFillPlusCircle, AiFillMinusCircle } from 'react-icons/ai';
-const CartPageItem = () => {
-    const [quantity , setQuantity] = useState(1)
+import { TO_CART_ADD , TO_CART_REMOVE } from '../Context/actions';
+
+import { motion } from 'framer-motion';
+
+import toast from 'react-hot-toast';
+
+import { cartAni } from '../animation/animation';
+
+const CartPageItem = ({data , disFun}) => {
+    const {img , price , title , quantity }  = data
+
+    const cartAdded = ()=>{
+        
+        disFun({type:TO_CART_ADD , payload : data})
+        toast.success("Added To Cart")
+    }
+    const cartRemoved = ()=>{
+        disFun({type : TO_CART_REMOVE , payload :data})
+        toast.success("Remove from cart")
+    }
+    // const [quantity , setQuantity] = useState(1)
   return (
-    <CartItemStyle>
+    <CartItemStyle variants={cartAni} layout>
         <div className="img_container">
-            <Image layout='fill' height='100' width='100' src={img.src} alt='product pic' objectFit='cover' />
+            <Image layout='fill' height='100' width='100' src={img.data.attributes.formats.small.url} alt='product pic' objectFit='cover' />
         </div>
         <div className='product_info'>
-            <p className="title">iPhone 13 pro Max</p>
-            <p className="price">$ 1,200</p>
+            <p className="title">{title}</p>
+            <p className="price">$ {price * quantity || price}</p>
             <div className='quantity'>
-              <AiFillMinusCircle onClick={()=>setQuantity(prev=>prev-1)} />
-              <p className="quan"> {quantity} </p>
-              <AiFillPlusCircle onClick={()=>setQuantity(prev=>prev+1)} />
+              <AiFillMinusCircle onClick={cartRemoved} />
+              <p className="quan"> {quantity || 1} </p>
+              <AiFillPlusCircle onClick={cartAdded} />
             </div>
         </div>
     </CartItemStyle>
@@ -25,14 +44,14 @@ const CartPageItem = () => {
 
 export default CartPageItem
 
-const CartItemStyle = styled.div`
+const CartItemStyle = styled(motion.div)`
 /* border: 1px solid red; */
 border-radius: 1rem;
     display: flex;
     gap: 4rem;
     padding: 2rem;
     height: 20rem;
-    max-height: 20rem;
+    max-height: 15rem;
     background-color: #fff;
     &>*{
         flex: 1;
