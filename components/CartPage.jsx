@@ -9,8 +9,13 @@ import { CartContext } from '../Context/CartContext'
 import { motion, AnimatePresence } from "framer-motion"
 import { cartConAni , emptyCartAni , cartPageAni} from '../animation/animation'
 import { loadStripe } from '@stripe/stripe-js';
+import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/router'
+import toast, { Toast } from 'react-hot-toast'
 const CartPage = ({clickToClose}) => {
     const {state , dispatch }= useContext (CartContext) 
+    const {user} = useUser()
+    const router = useRouter()
     useEffect(()=>{
         document.body.style.overflow='hidden'
         return ()=>{
@@ -20,11 +25,16 @@ const CartPage = ({clickToClose}) => {
 
 // const totalPrice = 
 const purchaseHandle = async ()=>{
-    console.log("Clicked Purchase")
+    // console.log("Clicked Purchase")
+if(!user){
+    toast('You first need to login to purchase items' , {icon:'🛢'})
+     router.push('/api/auth/login')
+     return ;
+    }
  const stripe = await loadStripe(
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       );
-    const res = await fetch("/api/checkout", {
+    const res = await fetch(`/api/checkout`, {
         method:'POST',
         headers : {
             'Content-Type' :'application/json'
@@ -35,7 +45,7 @@ const purchaseHandle = async ()=>{
     await stripe.redirectToCheckout({
      sessionId : data.id ,
 })
-    console.log(data)
+    // console.log(data)
 }
 
 const totalPrice = useMemo(()=>state.confirmItems.reduce((prev,next)=>{
@@ -52,7 +62,7 @@ const totalPrice = useMemo(()=>state.confirmItems.reduce((prev,next)=>{
                {state.confirmItems.map((item , i)=><CartPageItem  key={item.slug} data={item} disFun = {dispatch}/>)
 }
                 <motion.p className="total" layout> Subtotal : $ {totalPrice}</motion.p>
-                <motion.button className='purchase' layout onClick={purchaseHandle}>Purchase</motion.button>
+                <motion.button className='purchase' layout onClick={purchaseHandle} >Purchase</motion.button>
                 </>
             )
             :

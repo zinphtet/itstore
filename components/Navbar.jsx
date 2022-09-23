@@ -10,18 +10,19 @@ import { useContext } from 'react'
 import { CartContext } from '../Context/CartContext'
 import { cartPageAni } from '../animation/animation'
 import { AnimatePresence } from 'framer-motion'
-import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from '@auth0/nextjs-auth0';
 const Navbar = () => {
     const [showCartPage ,setShowCartPage] =  useState(false)
     const router = useRouter()
     const {state} = useContext(CartContext)
-
-    const { loginWithRedirect , logout , user, isAuthenticated, isLoading} = useAuth0();
+   
+    const {user  } = useUser()
 
     const total = state.confirmItems.reduce((prev,next)=>{
         return prev + next.quantity
     },0)
-
+    
+    console.log(user)
     // console.log(isAuthenticated , user)
   return (
     <NavbarStyle>
@@ -33,23 +34,27 @@ const Navbar = () => {
        
         <p className="brand" onClick={()=>router.push('/')} >IT Store</p>
         <div className="nav_right">
-            <div className="profile" onClick={()=>{
-                 if(isAuthenticated) return
-                loginWithRedirect()
-                }}>
+            <div className="profile" onClick={()=> {
+                if(user){
+                    router.push('/profile')
+                    return
+                }
+                router.push('/api/auth/login')
+            }}>
                 {
-                    isAuthenticated ? 
+                    user? 
                     (
-                        <div style={{width :'3.5rem' , height : '3.5rem' , borderRadius:'50%' , overflow:'hidden' , marginBottom:'.5rem'}}>
+                        <div style={{width :'3rem' , height : '3rem' , borderRadius:'50%' , overflow:'hidden' }}>
 
                             <Image src={user?.picture} layout='responsive' width={'100'} height={'100'} /> 
                         </div>
-                    ):   <BiUserCircle/>
+                    ):  
+                    <BiUserCircle/>
                 }
              
-                <p className="profile_info">{isAuthenticated ?user?.name :'login'}</p>
+                <p className="profile_info">{ user ? user?.name:'login'}</p>
             </div>
-                <button onClick={()=>logout({returnTo : 'http://localhost:3000'})}>Log out</button>
+    
             <div className="cart" onClick={()=>setShowCartPage(true)}>
                 <AiOutlineShoppingCart/>
                 <p>Cart</p>
@@ -94,7 +99,7 @@ const NavbarStyle = styled.div`
             font-size: 3rem;
         }
        p{
-            font-size: 1.5rem;
+            font-size: 1.2rem;
         }
     }
     .cart{

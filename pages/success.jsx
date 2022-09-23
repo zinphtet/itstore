@@ -3,20 +3,31 @@ import styled from 'styled-components'
 import {AiOutlineCheckCircle} from 'react-icons/ai'
 import { useRouter } from 'next/router'
 
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 export async function getServerSideProps(context) {
-    console.log(context , 'from success page')
+    // console.log(context.query)
+
+    // console.log(Object.keys(context.query)[0])
+   const objKey = Object.keys(context.query)[0]
+    // console.log(context.query[objKey])
+
+    const session = await stripe.checkout.sessions.retrieve(context.query[objKey]);
+
+    // console.log(session, 'session from success')
     return {
       props: {
-        data : 'nothing'
+        data : session
       }, // will be passed to the page component as props
     }
   }
-const success = () => {
+const success = ({data}) => {
     const router = useRouter()
+    // console.log(data)
   return (
     <Success>
         <div>
-               <p>Thank for your support ! 😍</p>
+               <p>Thank for your support ! <span style={{color : 'green'}}> {data.customer_details.name} </span>😍</p>
                <div>
                 <AiOutlineCheckCircle/>
                </div>
@@ -61,3 +72,8 @@ const Success = styled.div`
         }
     }
 `
+
+
+
+
+

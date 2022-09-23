@@ -2,10 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
 	if (req.method === 'POST') {
-		console.log(req.body);
 		try {
-			// Create Checkout Sessions from body params.
-			console.log('trying ');
 			const session = await stripe.checkout.sessions.create({
 				line_items: req.body.map((item) => {
 					return {
@@ -44,12 +41,12 @@ export default async function handler(req, res) {
 				],
 				allow_promotion_codes: true,
 				mode: 'payment',
-				success_url: `${req.headers.origin}/success`,
+				success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
 				cancel_url: `${req.headers.origin}/`,
 				// cancel_url: `/`,
 			});
 			// res.redirect(303, session.url);
-			console.log('It worked');
+			// console.log('It worked');
 			res.status(200).json(session);
 		} catch (err) {
 			res.status(err.statusCode || 500).json(err.message);
