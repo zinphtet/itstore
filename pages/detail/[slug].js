@@ -10,6 +10,7 @@ import { CartContext } from '../../Context/CartContext';
 import { ADD_CART, REMOVE_CART, TO_CART } from '../../Context/actions';
 import toast from 'react-hot-toast';
 import formatCurrency from '../../lib/formatCurrency';
+import Head from 'next/head';
 const ItemDetail = () => {
 	const router = useRouter();
 	const slugId = router.query.slug;
@@ -44,36 +45,40 @@ const ItemDetail = () => {
 		dispatch({ type: TO_CART, payload: { title, price, img, slug } });
 	};
 
-	console.log(state.confirmItems);
 	return (
-		<ItemDetailStyle>
-			<div
-				className="img_container"
-				style={{ position: 'relative', width: '100%' }}
-			>
-				<Image
-					src={img?.data?.attributes?.formats?.small?.url}
-					alt="Item img"
-					layout="responsive"
-					height={3}
-					width={4}
-					objectFit="cover"
-				/>
-			</div>
-			<div className="detail">
-				<p className="title">{title} </p>
-				<p className="description">{description}</p>
-				<div className="quantity">
-					<AiFillMinusCircle onClick={removeFromCart} />
-					<p> {quantity} </p>
-					<AiFillPlusCircle onClick={addToCart} />
-					<p> {formatCurrency(totalPrice)}</p>
+		<>
+			<Head>
+				<title>ItStore - Product Detail </title>
+			</Head>
+			<ItemDetailStyle>
+				<div
+					className="img_container"
+					style={{ position: 'relative', width: '100%' }}
+				>
+					<Image
+						src={img?.data?.attributes?.formats?.small?.url}
+						alt="Item img"
+						layout="responsive"
+						height={3}
+						width={4}
+						objectFit="cover"
+					/>
 				</div>
-				<button className="add_btn" onClick={confirmCart}>
-					Add to Cart
-				</button>
-			</div>
-		</ItemDetailStyle>
+				<div className="detail">
+					<p className="title">{title} </p>
+					<p className="description">{description}</p>
+					<div className="quantity">
+						<AiFillMinusCircle onClick={removeFromCart} />
+						<p> {quantity} </p>
+						<AiFillPlusCircle onClick={addToCart} />
+						<p> {formatCurrency(totalPrice)}</p>
+					</div>
+					<button className="add_btn" onClick={confirmCart}>
+						Add to Cart
+					</button>
+				</div>
+			</ItemDetailStyle>
+		</>
 	);
 };
 

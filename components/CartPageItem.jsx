@@ -30,11 +30,10 @@ const CartPageItem = ({ data, disFun }) => {
 			<div className="img_container">
 				<Image
 					layout="fill"
-					height="100"
-					width="100"
 					src={img.data.attributes.formats.small.url}
 					alt="product pic"
 					objectFit="cover"
+					priority={true}
 				/>
 			</div>
 			<div className="product_info">
