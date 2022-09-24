@@ -64,6 +64,7 @@ const Navbar = () => {
 								layout="responsive"
 								width={'100'}
 								height={'100'}
+								alt="profile"
 							/>
 						</div>
 					) : (
