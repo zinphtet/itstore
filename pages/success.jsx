@@ -18,11 +18,11 @@ export async function getServerSideProps(context) {
 		}, // will be passed to the page component as props
 	};
 }
-const success = ({ data }) => {
+const SuccessPage = ({ data }) => {
 	const router = useRouter();
 	// console.log(data)
 	return (
-		<Success>
+		<SuccessStyle>
 			<div>
 				<p>
 					Thank for your support !{' '}
@@ -34,13 +34,13 @@ const success = ({ data }) => {
 				</div>
 				<button onClick={() => router.push('/')}>Go To Shopping </button>
 			</div>
-		</Success>
+		</SuccessStyle>
 	);
 };
 
-export default success;
+export default SuccessPage;
 
-const Success = styled.div`
+const SuccessStyle = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
