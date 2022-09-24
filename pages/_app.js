@@ -5,7 +5,7 @@ import { CartContextProvider } from '../Context/CartContext';
 import { Toaster } from 'react-hot-toast';
 import { UserProvider } from '@auth0/nextjs-auth0';
 const client = new ApolloClient({
-	uri: 'http://localhost:1337/graphql',
+	uri: `${process.env.NEXT_PUBLIC_GRAPHQL_URL}`,
 	cache: new InMemoryCache(),
 });
 function MyApp({ Component, pageProps }) {

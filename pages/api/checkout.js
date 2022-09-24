@@ -7,8 +7,6 @@ export default async function handler(req, res) {
 				line_items: req.body.map((item) => {
 					return {
 						price_data: {
-							// The currency parameter determines which
-							// payment methods are used in the Checkout Session.
 							currency: 'usd',
 							product_data: {
 								name: item.title,

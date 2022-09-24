@@ -11,7 +11,7 @@ import { cartConAni , emptyCartAni , cartPageAni} from '../animation/animation'
 import { loadStripe } from '@stripe/stripe-js';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/router'
-import toast, { Toast } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 const CartPage = ({clickToClose}) => {
     const {state , dispatch }= useContext (CartContext) 
     const {user} = useUser()
@@ -23,9 +23,9 @@ const CartPage = ({clickToClose}) => {
         }
     },[])
 
-// const totalPrice = 
+
 const purchaseHandle = async ()=>{
-    // console.log("Clicked Purchase")
+  
 if(!user){
     toast('You first need to login to purchase items' , {icon:'🛢'})
      router.push('/api/auth/login')
@@ -45,7 +45,7 @@ if(!user){
     await stripe.redirectToCheckout({
      sessionId : data.id ,
 })
-    // console.log(data)
+   
 }
 
 const totalPrice = useMemo(()=>state.confirmItems.reduce((prev,next)=>{

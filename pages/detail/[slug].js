@@ -9,8 +9,8 @@ import { useContext } from 'react';
 import { CartContext } from '../../Context/CartContext';
 import { ADD_CART, REMOVE_CART, TO_CART } from '../../Context/actions';
 import toast from 'react-hot-toast';
+import formatCurrency from '../../lib/formatCurrency';
 const ItemDetail = () => {
-	// const [quantity, setQuantity] = useState(1);
 	const router = useRouter();
 	const slugId = router.query.slug;
 
@@ -67,7 +67,7 @@ const ItemDetail = () => {
 					<AiFillMinusCircle onClick={removeFromCart} />
 					<p> {quantity} </p>
 					<AiFillPlusCircle onClick={addToCart} />
-					<p> $ {totalPrice}</p>
+					<p> {formatCurrency(totalPrice)}</p>
 				</div>
 				<button className="add_btn" onClick={confirmCart}>
 					Add to Cart
