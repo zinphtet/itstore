@@ -11,6 +11,7 @@ import { CartContext } from '../Context/CartContext';
 import { cartPageAni } from '../animation/animation';
 import { AnimatePresence } from 'framer-motion';
 import { useUser } from '@auth0/nextjs-auth0';
+import Link from 'next/link';
 const Navbar = () => {
 	const [showCartPage, setShowCartPage] = useState(false);
 	const router = useRouter();
@@ -68,15 +69,19 @@ const Navbar = () => {
 							/>
 						</div>
 					) : (
-						<a href="/api/auth/login">
-							<BiUserCircle />
-						</a>
+						<Link href="/api/auth/login">
+							<a>
+								<BiUserCircle />
+							</a>
+						</Link>
 					)}
 
 					<p className="profile_info">{user ? user?.name : 'login'}</p>
 					{user && (
 						<button className="logout_btn">
-							<a href="/api/auth/logout">Logout</a>
+							<Link href="/api/auth/logout">
+								<a>Logout</a>
+							</Link>
 						</button>
 					)}
 				</div>
