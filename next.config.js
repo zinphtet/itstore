@@ -7,6 +7,15 @@ const nextConfig = {
 	images: {
 		domains: ['res.cloudinary.com', 'lh3.googleusercontent.com'],
 	},
+	async redirects() {
+		return [
+			{
+				source: '/api/auth/callback',
+				destination: '/',
+				permanent: true,
+			},
+		];
+	},
 };
 
 module.exports = nextConfig;
