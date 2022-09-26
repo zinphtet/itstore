@@ -47,7 +47,7 @@ const Navbar = () => {
 							// router.push('/profile');  // implement Profile page
 							return;
 						}
-						router.push('/api/auth/login');
+						// router.push('/api/auth/login');
 					}}
 				>
 					{user ? (
@@ -68,16 +68,15 @@ const Navbar = () => {
 							/>
 						</div>
 					) : (
-						<BiUserCircle />
+						<a href="/api/auth/login">
+							<BiUserCircle />
+						</a>
 					)}
 
 					<p className="profile_info">{user ? user?.name : 'login'}</p>
 					{user && (
-						<button
-							className="logout_btn"
-							onClick={() => router.push('/api/auth/logout')}
-						>
-							Logout
+						<button className="logout_btn">
+							<a href="/api/auth/logout">Logout</a>
 						</button>
 					)}
 				</div>
